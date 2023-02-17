@@ -1,12 +1,16 @@
-import { UsersService } from './../users/users.service';
+import { Message, MessageDocument } from './message.schema';
 import { Socket } from 'socket.io';
 import { AuthService } from './../auth/auth.service';
 import { Injectable } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { MessageDto } from './dto/message.dto';
+
 
 @Injectable()
 export class ChatsService {
-    constructor(private authService: AuthService) {}
+    constructor(private authService: AuthService, @InjectModel(Message.name) private messageModel: Model<MessageDocument>) {}
 
     async getUserFromSocket(socket: Socket) {
         let auth_token = socket.handshake.headers.authorization;
@@ -22,6 +26,17 @@ export class ChatsService {
         }
 
         return user;
+    }
+
+
+    async createMessage(message: MessageDto, userId: string) {
+        const newMessage = new this.messageModel({...message, userId})
+        await newMessage.save
+        return newMessage
+    }
+
+    async getAllMessages() {
+        return this.messageModel.find().populate('user')
     }
 
     
