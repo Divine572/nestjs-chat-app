@@ -1,6 +1,5 @@
 import { registerAs } from '@nestjs/config';
 
-// const isDevelopment = process.env.NODE_ENV !== 'production';
 
 /**
  * Mongo database connection config
